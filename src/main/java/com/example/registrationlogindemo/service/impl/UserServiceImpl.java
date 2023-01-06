@@ -1,8 +1,10 @@
 package com.example.registrationlogindemo.service.impl;
 
 import com.example.registrationlogindemo.dto.UserDto;
+import com.example.registrationlogindemo.entity.Person;
 import com.example.registrationlogindemo.entity.Role;
 import com.example.registrationlogindemo.entity.User;
+import com.example.registrationlogindemo.repository.PersonRepository;
 import com.example.registrationlogindemo.repository.RoleRepository;
 import com.example.registrationlogindemo.repository.UserRepository;
 import com.example.registrationlogindemo.service.UserService;
@@ -19,35 +21,39 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private final PersonRepository personRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           PersonRepository personRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.personRepository = personRepository;
     }
 
     @Override
-    public void saveUser(UserDto userDto) {
+    public void saveUser(UserDto userDto,Person person) {
         User user = new User();
-        user.setName(userDto.getFirstName() + " " + userDto.getLastName());
-        user.setEmail(userDto.getEmail());
+        user.setUsername(userDto.getUsername());
 
-        //encrypt the password once we integrate spring security
-        //user.setPassword(userDto.getPassword());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        Role role = roleRepository.findByName("ROLE_ADMIN");
+
+        Role role = roleRepository.findByName("USER");
         if(role == null){
             role = checkRoleExist();
         }
+
+        user.setPerson(person);
+
         user.setRoles(Arrays.asList(role));
         userRepository.save(user);
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
@@ -59,16 +65,14 @@ public class UserServiceImpl implements UserService {
 
     private UserDto convertEntityToDto(User user){
         UserDto userDto = new UserDto();
-        String[] name = user.getName().split(" ");
-        userDto.setFirstName(name[0]);
-        userDto.setLastName(name[1]);
-        userDto.setEmail(user.getEmail());
+
+        userDto.setUsername(userDto.getUsername());
         return userDto;
     }
 
     private Role checkRoleExist() {
         Role role = new Role();
-        role.setName("ROLE_ADMIN");
+        role.setName("USER");
         return roleRepository.save(role);
     }
 }

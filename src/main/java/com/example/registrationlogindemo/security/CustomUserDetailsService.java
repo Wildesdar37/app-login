@@ -2,6 +2,7 @@ package com.example.registrationlogindemo.security;
 
 import com.example.registrationlogindemo.entity.Role;
 import com.example.registrationlogindemo.entity.User;
+import com.example.registrationlogindemo.repository.PersonRepository;
 import com.example.registrationlogindemo.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,16 +19,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    private PersonRepository personService;
+
+    public CustomUserDetailsService(UserRepository userRepository, PersonRepository personRepository) {
         this.userRepository = userRepository;
+        this.personService = personRepository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
 
         if (user != null) {
-            return new org.springframework.security.core.userdetails.User(user.getEmail(),
+            return new org.springframework.security.core.userdetails.User(user.getUsername(),
                     user.getPassword(),
                     mapRolesToAuthorities(user.getRoles()));
         }else{

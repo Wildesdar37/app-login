@@ -11,28 +11,38 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" th:fragment="header">
     <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">Registration and Login System</a>
+        <a class="navbar-brand" th:href="@{/}">Sansara</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
 </nav>
-<br />
-<br />
-<br />
-<div class="container">
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+
+<div class="container mt-3">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <div th:if="${param.error}">
-                <div class="alert alert-danger">Invalid Email and Password.</div>
-            </div>
-            <div th:if="${param.logout}">
-                <div class="alert alert-success">You have been logged out.</div>
-            </div>
+
             <div class="card">
                 <div class="card-header">
-                    <h3 class="text-center">Login Form</h3>
+                    <h3 class="text-center">Ingresar</h3>
                 </div>
+
+                <div th:if="${param.success}" class="p-2 mt-2">
+                    <div class="alert alert-info">Registro Exitoso</div>
+                </div>
+                <div th:if="${param.error}" class="p-2 mt-2">
+                    <div class="alert alert-danger">Username o contraseña incorrecta.</div>
+                </div>
+                <div th:if="${param.logout}" class="p-2 mt-2">
+                    <div class="alert alert-success">Hasta luego.</div>
+                </div>
+
                 <div class="card-body">
                     <form
                             method="post"
@@ -41,17 +51,17 @@
                             role="form"
                     >
                         <div class="mb-3">
-                            <label for="username" class="control-label">Email *</label>
+                            <label for="username" class="control-label">Username *</label>
                             <input type="text"
                                    id="username"
                                    name="username"
                                    class="form-control"
-                                   placeholder="Email"
+                                   placeholder="Username"
                             />
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="control-label">Password *</label>
+                            <label for="password" class="control-label">Contraseña *</label>
                             <input type="password"
                                    id="password"
                                    name="password"
@@ -61,10 +71,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Login</button>
-                            <span> Not registered?
-                            <a th:href="@{/register}"> Register/SignUp Here</a>
-                        </span>
+                            <button type="submit" class="w-100 btn btn-primary">Ingresar</button>
+                            <div class="mt-3 d-flex justify-content-end"> Aun no estas registrado?
+                            <a class="ms-3" th:href="@{/register}"> Registrarse</a>
+                        </div>
                         </div>
                     </form>
                 </div>

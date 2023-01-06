@@ -5,16 +5,14 @@ import com.example.registrationlogindemo.entity.User;
 import com.example.registrationlogindemo.repository.PersonRepository;
 import com.example.registrationlogindemo.repository.UserRepository;
 import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.time.LocalDateTime;
 
@@ -23,19 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TestGetUser {
+public class TestPersonUser {
 
     @Autowired
     private PersonRepository personRepository;
     @Autowired
-    private UserRepository userRepository;
+    private  UserRepository userRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private  PasswordEncoder passwordEncoder;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        System.out.println("before clas");
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
 
     @Test
     public void shouldSaveUser(){
@@ -61,12 +58,33 @@ public class TestGetUser {
 
     @Test
     public void shouldBeListUser(){
+        System.out.println("should by list user");
+        System.out.println("before clas");
 
+        Person person = new Person();
+        person.setRut("26871346-9");
+        person.setFirstName("test 1");
+        person.setLastName("user");
+        person.setDateCreated(LocalDateTime.now());
+        person.setPhone(92123131);
+
+        Person savedPerson = personRepository.save(person);
+
+        User user = new User();
+        user.setPerson(person);
+        user.setUsername("test@mail.com");
+        user.setPassword(passwordEncoder.encode("testpass"));
+
+        User savedUser = userRepository.save(user);
+
+        User userDb = userRepository.findByUsername(savedUser.getUsername());
+
+        assertThat(userDb.getUsername()).isEqualTo(savedUser.getUsername());
     }
 
     @After
     public void tearDown() {
-
+        JdbcTestUtils.deleteFromTables(jdbcTemplate,"users","roles","persons");
     }
 
 }
